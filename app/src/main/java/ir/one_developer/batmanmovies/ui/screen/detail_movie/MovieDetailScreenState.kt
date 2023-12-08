@@ -8,6 +8,6 @@ import ir.one_developer.batmanmovies.domain.Movie
  */
 
 data class MovieDetailScreenState(
-    val movie : Movie = Movie(),
-    val isLoading : Boolean = true
+    val isLoading : Boolean = true,
+    val movie : Movie = Movie.mockMovies.first()
 )

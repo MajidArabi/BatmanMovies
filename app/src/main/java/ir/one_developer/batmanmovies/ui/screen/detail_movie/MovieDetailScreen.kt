@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -26,6 +27,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -51,47 +54,66 @@ fun MovieDetailScreen(
     modifier = Modifier.fillMaxSize()
 ) {
     val context = LocalContext.current
+    val colors = MaterialTheme.colorScheme
     val screenHeight = LocalConfiguration.current.screenHeightDp
 
-    AsyncImage(
-        model = state.movie.poster,
-        contentScale = ContentScale.FillWidth,
-        contentDescription = state.movie.title,
-        modifier = Modifier.fillMaxWidth(),
-        imageLoader = ImageLoader.Builder(context)
-            .respectCacheHeaders(false)
-            .logger(DebugLogger())
-            .crossfade(300)
-            .build()
-    )
+    Box {
+        AsyncImage(
+            model = state.movie.poster,
+            contentScale = ContentScale.FillWidth,
+            contentDescription = state.movie.title,
+            modifier = Modifier.fillMaxWidth(),
+            imageLoader = ImageLoader.Builder(context)
+                .respectCacheHeaders(false)
+                .logger(DebugLogger())
+                .crossfade(300)
+                .build()
+        )
+
+        Spacer(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Color.Transparent, colors.background)
+                    )
+                )
+        )
+    }
 
     IconButton(
         onClick = onBack,
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 32.dp)
+            .background(
+                color = colors.background.copy(alpha = 0.6F),
+                shape = CircleShape
+            )
     ) {
         Icon(
             imageVector = Icons.Rounded.ArrowBack,
-            contentDescription = Icons.Rounded.Backspace.name
+            contentDescription = Icons.Rounded.Backspace.name,
         )
     }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = (screenHeight / 3).dp, max = (screenHeight / 1.5).dp)
+            .heightIn(min = (screenHeight / 3).dp, max = (screenHeight / 1.8).dp)
             .align(Alignment.BottomCenter)
             .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-            .background(color = MaterialTheme.colorScheme.background.copy(alpha = .9F))
-            .padding(24.dp)
-            .verticalScroll(state = rememberScrollState())
-            .navigationBarsPadding(),
+            .background(color = colors.background)
+            .padding(horizontal = 24.dp)
+            .padding(top = 24.dp)
+            .navigationBarsPadding()
+            .verticalScroll(state = rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
 
         Text(
-            text = state.movie.title.orEmpty(),
-            style = MaterialTheme.typography.headlineLarge
+            text = "${state.movie.title}",
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.loading(visible = state.isLoading),
         )
 
         Text(
@@ -106,87 +128,99 @@ fun MovieDetailScreen(
             text = "${state.movie.plot}",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.loading(visible = state.isLoading),
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6F)
+            color = colors.onBackground.copy(alpha = 0.6F)
         )
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        RowText(
-            isLoading = false,
-            title = "Type:          ",
-            text = state.movie.type?.replaceFirstChar { it.uppercase() }
-        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                if (!state.movie.type.isNullOrBlank()) Title(title = "Type:")
+                if (!state.movie.country.isNullOrBlank()) Title(title = "Country:")
+                if (!state.movie.language.isNullOrBlank()) Title(title = "Language:")
+                if (!state.movie.genre.isNullOrBlank()) Title(title = "Genre:")
+                if (!state.movie.released.isNullOrBlank()) Title(title = "Release:")
+                if (!state.movie.boxOffice.isNullOrBlank()) Title(title = "BoxOffice:")
+                if (!state.movie.director.isNullOrBlank()) Title(title = "Director:")
+                if (!state.movie.writer.isNullOrBlank()) Title(title = "Writer:")
+                if (!state.movie.actors.isNullOrBlank()) Title(title = "Actors:")
+            }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                if (!state.movie.type.isNullOrBlank()) Description(
+                    isLoading = state.isLoading,
+                    text = state.movie.type.replaceFirstChar { it.uppercase() }
+                )
 
-        RowText(
-            title = "Country:     ",
-            text = state.movie.country,
-            isLoading = state.isLoading
-        )
+                if (!state.movie.country.isNullOrBlank()) Description(
+                    text = state.movie.country,
+                    isLoading = state.isLoading
+                )
 
-        RowText(
-            title = "Language: ",
-            text = state.movie.language,
-            isLoading = state.isLoading
-        )
+                if (!state.movie.language.isNullOrBlank()) Description(
+                    text = state.movie.language,
+                    isLoading = state.isLoading
+                )
 
+                if (!state.movie.genre.isNullOrBlank()) Description(
+                    text = state.movie.genre,
+                    isLoading = state.isLoading
+                )
 
-        RowText(
-            title = "Genre:        ",
-            text = state.movie.genre,
-            isLoading = state.isLoading
-        )
+                if (!state.movie.released.isNullOrBlank()) Description(
+                    text = state.movie.released,
+                    isLoading = state.isLoading
+                )
 
-        RowText(
-            title = "Release:    ",
-            text = state.movie.released,
-            isLoading = state.isLoading
-        )
+                if (!state.movie.boxOffice.isNullOrBlank()) Description(
+                    isLoading = state.isLoading,
+                    text = state.movie.boxOffice
+                )
 
-        RowText(
-            title = "Director:    ",
-            text = state.movie.director,
-            isLoading = state.isLoading
-        )
+                if (!state.movie.director.isNullOrBlank()) Description(
+                    text = state.movie.director,
+                    isLoading = state.isLoading
+                )
 
-        RowText(
-            title = "Writer:        ",
-            text = state.movie.writer,
-            isLoading = state.isLoading
-        )
+                if (!state.movie.writer.isNullOrBlank()) Description(
+                    text = state.movie.writer,
+                    isLoading = state.isLoading
+                )
 
-        RowText(
-            title = "Actors:       ",
-            text = state.movie.actors,
-            isLoading = state.isLoading
-        )
-
-        RowText(
-            title = "BoxOffice:  ",
-            isLoading = state.isLoading,
-            text = state.movie.boxOffice
-        )
+                if (!state.movie.actors.isNullOrBlank()) Description(
+                    text = state.movie.actors,
+                    isLoading = state.isLoading
+                )
+            }
+        }
 
     }
 
 }
 
 @Composable
-private fun RowText(
+private fun Title(
     title: String,
+) = Text(
+    text = title,
+    style = MaterialTheme.typography.titleMedium,
+    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6F)
+)
+
+@Composable
+private fun Description(
     text: String?,
     isLoading: Boolean
-) = Row {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6F)
-    )
-    Text(
-        text = "$text",
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.loading(visible = isLoading)
-    )
-}
+) = Text(
+    text = "$text",
+    style = MaterialTheme.typography.titleMedium,
+    modifier = Modifier.loading(visible = isLoading)
+)
 
 @Preview(showBackground = true)
 @Composable

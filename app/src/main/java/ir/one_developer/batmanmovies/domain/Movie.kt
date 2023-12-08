@@ -44,7 +44,16 @@ data class Movie(
                     Movie(
                         year = "2005",
                         type = "movie",
+                        imdbRating = "8.2",
+                        runtime = "140 min",
+                        language = "English",
                         title = "Batman Begins",
+                        released = "15 Jun 2005",
+                        country = "United States",
+                        boxOffice = "$206,863,479",
+                        genre = "Action, Crime, Drama",
+                        director = "Christopher Nolan",
+                        plot = "After witnessing his parents' death, Bruce learns the art of fighting to confront injustice. When he returns to Gotham as Batman, he must stop a secret society that intends to destroy the city.",
                     )
                 )
             }
