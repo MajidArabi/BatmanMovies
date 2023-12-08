@@ -12,7 +12,6 @@ plugins {
         alias(libs.plugins.google.hilt)
         alias(libs.plugins.google.ksp)
     }
-
 }
 
 android {
@@ -27,9 +26,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
+        vectorDrawables { useSupportLibrary = true }
+
+        buildConfigField("String", "BASE_URL", "\"https://www.omdbapi.com\"")
     }
 
     buildTypes {
@@ -69,6 +68,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
     hilt {
         enableAggregatingTask = true
     }

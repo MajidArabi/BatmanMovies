@@ -17,7 +17,7 @@
         android:theme="@style/Theme.BatmanMovies"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.screen.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.BatmanMovies">
             <intent-filter>
